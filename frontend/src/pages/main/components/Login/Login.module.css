@@ -1,0 +1,9 @@
+.Login {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.Login>* {
+    margin: 0.3rem;
+}

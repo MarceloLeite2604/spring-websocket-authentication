@@ -8,10 +8,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter;
+import org.springframework.security.oauth2.server.resource.web.server.authentication.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
@@ -31,7 +31,9 @@ class WebConfiguration {
   }
 
   @Bean
-  public SecurityWebFilterChain createSecurityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
+  public SecurityWebFilterChain createSecurityWebFilterChain(
+      ServerHttpSecurity serverHttpSecurity,
+      ServerBearerTokenAuthenticationConverter serverBearerTokenAuthenticationConverter) {
     serverHttpSecurity
         .authorizeExchange(exchanges -> exchanges
             .pathMatchers("/chat/**")
@@ -40,7 +42,8 @@ class WebConfiguration {
             .authenticated()
         )
         .oauth2ResourceServer(oAuth2ResourceServerSpec ->
-            oAuth2ResourceServerSpec.jwt(Customizer.withDefaults()));
+            oAuth2ResourceServerSpec.jwt(Customizer.withDefaults())
+                .bearerTokenConverter(serverBearerTokenAuthenticationConverter));
     return serverHttpSecurity.build();
   }
 
@@ -60,5 +63,13 @@ class WebConfiguration {
     final var reactiveJwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
     reactiveJwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(reactiveJwtGrantedAuthoritiesConverterAdapter);
     return reactiveJwtAuthenticationConverter;
+  }
+
+  @Bean
+  public ServerBearerTokenAuthenticationConverter createServerBearerTokenAuthenticationConverter() {
+    final var serverBearerTokenAuthenticationConverter = new ServerBearerTokenAuthenticationConverter();
+
+    serverBearerTokenAuthenticationConverter.setAllowUriQueryParameter(true);
+    return serverBearerTokenAuthenticationConverter;
   }
 }

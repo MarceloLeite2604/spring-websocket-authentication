@@ -1,1 +1,1 @@
-export * from './useKeycloak';
+export * from './useWebSocket';

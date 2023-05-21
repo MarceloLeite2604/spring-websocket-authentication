@@ -1,14 +1,11 @@
-import React from 'react';
+import { Main } from './pages/main';
+import { Providers } from './providers';
 
-import { Login, KeycloakProvider } from './components';
-
-function App() {
+export const App = () => {
 
   return (
-    <KeycloakProvider>
-      <Login />
-    </KeycloakProvider>
+    <Providers>
+      <Main />
+    </Providers>
   );
-}
-
-export default App;
+};

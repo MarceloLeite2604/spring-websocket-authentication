@@ -4,7 +4,7 @@ import {
   useState
 } from 'react';
 import Keycloak from 'keycloak-js';
-import { configuration } from '../../configuration';
+import { configuration } from '../configuration';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 
 const initOptions = {
