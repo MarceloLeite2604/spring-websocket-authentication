@@ -3,10 +3,10 @@ import {
   useRef,
   useState
 } from 'react';
-import { useWebSocket } from '../../../../hooks';
-import Styles from './WebSocketConnection.module.css';
+import { useWebSocket } from '../../../../../../hooks';
+import Styles from './Output.module.css';
 
-export const WebSocketOutput = () => {
+export const Output = () => {
 
   const [content, setContent] = useState<string[]>([]);
 

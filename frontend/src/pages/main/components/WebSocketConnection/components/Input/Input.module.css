@@ -1,0 +1,16 @@
+.WebSocketInput {
+  display: flex;
+  flex-direction: row;
+}
+
+.WebSocketInput>* {
+  margin-right: 0.3rem;
+}
+
+.WebSocketInput input {
+  width: 29.7rem;
+}
+
+.WebSocketInput button {
+  width: 10rem;
+}

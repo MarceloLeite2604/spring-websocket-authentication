@@ -1,0 +1,14 @@
+.Connection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.Connection>* {
+  margin: 0.3rem;
+}
+
+.Connection span {
+  color: red;
+  font-size: 0.8rem;
+}

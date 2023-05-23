@@ -1,12 +1,16 @@
-import { Button } from './Button';
-import { WebSocketOutput } from './WebSocketOutput';
 import Styles from './WebSocketConnection.module.css';
+import {
+  Connection,
+  Input,
+  Output
+} from './components';
 
 export const WebSocketConnection = () => {
   return (
     <div className={Styles.WebSocketConnection}>
-      <Button />
-      <WebSocketOutput />
+      <Connection />
+      <Input />
+      <Output />
     </div>
   );
 };

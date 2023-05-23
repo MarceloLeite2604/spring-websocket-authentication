@@ -13,9 +13,13 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter;
 import org.springframework.security.oauth2.server.resource.web.server.authentication.ServerBearerTokenAuthenticationConverter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -37,7 +41,7 @@ class WebConfiguration {
     serverHttpSecurity
         .authorizeExchange(exchanges -> exchanges
             .pathMatchers("/chat/**")
-            .hasAuthority("chat-websocket-comm")
+            .hasAuthority("websocket-access")
             .anyExchange()
             .authenticated()
         )
@@ -71,5 +75,17 @@ class WebConfiguration {
 
     serverBearerTokenAuthenticationConverter.setAllowUriQueryParameter(true);
     return serverBearerTokenAuthenticationConverter;
+  }
+
+  @Bean
+  public CorsConfigurationSource createCorsWebFilter() {
+    final var corsConfiguration = new CorsConfiguration();
+    corsConfiguration.addAllowedOrigin("http://localhost:3000");
+    corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
+
+    final var urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+    urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+    return urlBasedCorsConfigurationSource;
   }
 }

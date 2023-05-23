@@ -10,7 +10,7 @@ import { configuration } from '../configuration';
 
 interface WebSocketProviderValue {
   state: number,
-  connect: () => void,
+  connect: (webSocketClientErrorHandler? : WebSocketHttpClientErrorHandler) => void,
   disconnect: () => void,
   send: (data: string | ArrayBufferLike | ArrayBufferView | Blob) => void,
   value?: string | ArrayBufferLike | ArrayBufferView | Blob
@@ -29,7 +29,10 @@ type WebSocketProviderProps = {
   children: ReactNode
 }
 
+export type WebSocketHttpClientErrorHandler = (status : number) => void;
+
 export const WebSocketProvider : FC<WebSocketProviderProps> = ({ children }) => {
+
   const [state, setState] = useState<number>(WebSocket.CLOSED);
   const [value, setValue] = useState<string | ArrayBufferLike | ArrayBufferView | Blob>();
   
@@ -37,25 +40,46 @@ export const WebSocketProvider : FC<WebSocketProviderProps> = ({ children }) => 
 
   const { initialized, keycloak } = useKeycloak();
 
-  const connect = () => {
-    if (!initialized || !keycloak.token) {
-      throw new Error('Not authenticated.');
-    }
-
-    const url = new URL(configuration.websocketUrl);
-    url.searchParams.append('access_token', keycloak.token);
-
-    webSocketRef.current = new WebSocket(url);
-    setState(webSocketRef.current.readyState);
-
+  const connectWebSocket = (wsUrl: URL) => {
+    webSocketRef.current = new WebSocket(wsUrl);
     webSocketRef.current.onmessage = (event) => setValue(event.data);
     webSocketRef.current.onopen = () => setState(webSocketRef.current?.readyState || WebSocket.CLOSED);
     webSocketRef.current.onclose = () => setState(webSocketRef.current?.readyState || WebSocket.CLOSED);
-    
+  };
+
+  const checkAuthentication = (wsUrl : URL, webSocketClientErrorHandler?: WebSocketHttpClientErrorHandler) => {
+    const httpUrl = new URL(wsUrl);
+
+    httpUrl.protocol = 'http';
+
+    const httpRequest = new XMLHttpRequest();
+
+    httpRequest.onreadystatechange = function() {
+      if (this.readyState === 4) {
+        /* HTTP status 400 is intentionally left outside of the range since backend
+        will return this status as result when authentication is valid. */
+        if (this.status > 400 && this.status < 500) {
+          webSocketClientErrorHandler?.(this.status);
+        } else {
+          connectWebSocket(wsUrl);
+        }
+      }
+    };
+    httpRequest.open('GET', httpUrl);
+    httpRequest.send();
+  };
+
+  const connect = (webSocketClientErrorHandler? : WebSocketHttpClientErrorHandler) => {
+    const url = new URL(configuration.websocketUrl);
+
+    if (initialized && keycloak.token) {
+      url.searchParams.append('access_token', keycloak.token);
+    }
+
+    checkAuthentication(url, webSocketClientErrorHandler);
   };
 
   const disconnect = () => {
-    
     webSocketRef.current?.close();
     setState(webSocketRef.current?.readyState || WebSocket.CLOSED);
   };

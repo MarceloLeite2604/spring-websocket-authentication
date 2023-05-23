@@ -1,0 +1,31 @@
+.WebSocketConnection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.WebSocketConnection>* {
+  margin-bottom: 0.3rem;
+}
+
+.WebSocketOutput {
+  width: 40rem;
+  height: 20rem;
+}
+
+.WebSocketInput {
+  display: flex;
+  flex-direction: row;
+}
+
+.WebSocketInput>* {
+  margin-right: 0.3rem;
+}
+
+.WebSocketInput input {
+  width: 29.7rem;
+}
+
+.WebSocketInput button {
+  width: 10rem;
+}
