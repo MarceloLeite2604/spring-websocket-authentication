@@ -20,7 +20,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class ChatWebSocketHandler implements WebSocketHandler {
+public class EchoWebSocketHandler implements WebSocketHandler {
 
   private List<String> messages;
 
@@ -28,12 +28,10 @@ public class ChatWebSocketHandler implements WebSocketHandler {
   public Mono<Void> handle(WebSocketSession webSocketSession) {
     return webSocketSession.send(Flux.interval(Duration.of(1, ChronoUnit.SECONDS))
             .flatMap(value -> elaborateTick())
-            .map(webSocketSession::textMessage)
-            .log())
+            .map(webSocketSession::textMessage))
         .and(webSocketSession.receive()
             .map(WebSocketMessage::getPayloadAsText)
-            .map(this::addMessage)
-            .log());
+            .map(this::addMessage));
   }
 
   private Mono<String> elaborateTick() {

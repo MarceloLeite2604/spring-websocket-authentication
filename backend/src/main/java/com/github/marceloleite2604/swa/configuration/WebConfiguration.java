@@ -1,6 +1,6 @@
 package com.github.marceloleite2604.swa.configuration;
 
-import com.github.marceloleite2604.swa.ChatWebSocketHandler;
+import com.github.marceloleite2604.swa.EchoWebSocketHandler;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +29,8 @@ class WebConfiguration {
   private static final int BEFORE_ANNOTATED_CONTROLLERS_ORDER = -1;
 
   @Bean
-  public HandlerMapping createHandlerMapping(ChatWebSocketHandler chatWebSocketHandler) {
-    final var map = Map.of("/chat", chatWebSocketHandler);
+  public HandlerMapping createHandlerMapping(EchoWebSocketHandler echoWebSocketHandler) {
+    final var map = Map.of("/echo", echoWebSocketHandler);
     return new SimpleUrlHandlerMapping(map, BEFORE_ANNOTATED_CONTROLLERS_ORDER);
   }
 
@@ -40,7 +40,7 @@ class WebConfiguration {
       ServerBearerTokenAuthenticationConverter serverBearerTokenAuthenticationConverter) {
     serverHttpSecurity
         .authorizeExchange(exchanges -> exchanges
-            .pathMatchers("/chat/**")
+            .pathMatchers("/echo/**")
             .hasAuthority("websocket-access")
             .anyExchange()
             .authenticated()
