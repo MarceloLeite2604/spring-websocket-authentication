@@ -9,6 +9,9 @@ services:
     volumes:
       - ./docker/postgres/data:/var/lib/postgresql/data
     user: '1000'
+    profiles:
+      - default
+      - infrastructure
 
   keycloak:
     image: bitnami/keycloak:21.1.1
@@ -24,3 +27,22 @@ services:
       - KEYCLOAK_DATABASE_PASSWORD=kk-password
       - KEYCLOAK_DATABASE_NAME=keycloak
       - KEYCLOAK_DATABASE_SCHEMA=public
+    profiles:
+      - default
+      - infrastructure
+
+  backend:
+    build: backend
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    profiles:
+      - default
+
+  frontend:
+    build: frontend
+    ports:
+      - 3000:80
+    profiles:
+      - default
